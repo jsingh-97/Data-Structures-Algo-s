@@ -1,0 +1,45 @@
+import java.util.Scanner;
+ ///rotating matrix in place
+public class TestClass 
+{
+	public static void main(String[] args)
+	{	
+		// TODO Auto-generated method stub
+		int row_size=4;
+		int col_size=4;
+		Scanner sc=new Scanner(System.in);
+		
+		int a[][]=new int[row_size][col_size];
+		System.out.println("Enter elements in 4*4 matrix ");
+		for(int i=0;i<row_size;i++)
+			for(int j=0;j<col_size;j++)
+			{
+				int n=sc.nextInt();
+             a[i][j]=n;				
+			}
+    //counting number of layers
+		int countcircle=row_size/2;
+		int size=row_size-1;
+		for(int i=0;i<countcircle;i++)
+		{	int j=size-i;
+		  	while(j>=0 && j>i)
+		  	{
+		  		int temp=a[i][j];
+		  		a[i][j]=a[j][size-i];
+		  		a[j][size-i]=a[size-i][size-j];
+		  		a[size-i][size-j]=a[size-j][i];
+		  		a[size-j][i]=temp;
+		  		j--;
+		  	}
+		}
+		System.out.println("Rotating matrix by 90 degree");
+		for(int i=0;i<row_size;i++)
+			{for(int j=0;j<row_size;j++)
+			{
+				System.out.print(a[i][j]+" ");
+			}
+			System.out.println("");
+			}
+	}
+}
+
