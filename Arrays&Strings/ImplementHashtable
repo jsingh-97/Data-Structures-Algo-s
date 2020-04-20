@@ -1,0 +1,109 @@
+import java.util.ArrayList;
+import java.util.Scanner;
+//Hashmap uses technique called hashing.Hashing is technique used to convert large string to
+//small string. A short string helps in indexing and fast searching. 
+//If a is the initial capacity and l(varies between 0 and 1) is the load factor
+//then rehashing happens if capacity reaches a*l. Rehashing means making new hashmap which is double in size.
+//Complexity- get->O(1) and put->O(1) if good hashing function is chosen
+//HashMap is non synchronized. It is not-thread safe and can’t be shared between many threads without proper synchronization code whereas Hashtable is synchronized. It is thread-safe and can be shared with many threads.abstractWhy HashTable doesn’t allow null and HashMap does?
+//To successfully store and retrieve objects from a HashTable, the objects used as keys must implement the hashCode method and the equals method. Since null is not an object, it can’t implement these methods. HashMap is an advanced version and improvement on the Hashtable. HashMap was created later.
+public class HashDemo
+{
+	public static void main(String[] args)
+	{	
+		Hasher<String,Integer> hashMap=new Hasher<String,Integer>(4);
+		hashMap.put("abc", 12);
+		hashMap.put("def", 14);
+		System .out.println(hashMap.get("abc"));
+		hashMap.put("abc", 15);
+		System .out.println(hashMap.get("abc"));
+		hashMap.print();
+	}
+	public static class Hasher<K,V>
+	{
+		private ArrayList<Node<K,V>> arr;
+		private int capacity;
+		public Hasher(int bucketValue)
+		{
+			capacity=bucketValue;
+			arr=new ArrayList<Node<K,V>>(capacity);
+			for(int i=0;i<capacity;i++)
+			{
+				arr.add(i,null);
+			}
+		}
+        //this method prints all key value pairs in the HashMap
+        public void print() {
+			// TODO Auto-generated method stub
+			for(int i=0;i<4;i++)
+			{
+				if(arr.get(i)!=null)
+				{
+					printKeysIndexedAt(i);
+				}
+			}
+		}
+
+		private void printKeysIndexedAt(int i) {
+			// TODO Auto-generated method stub
+			Node currentNode=arr.get(i);
+			while(currentNode!=null)
+			{
+				System.out.println(currentNode.key +" "+ currentNode.value);
+				currentNode=currentNode.next;
+			}
+			
+		}
+
+		private class Node<K,V>
+		{
+			private K key;
+			private V value;
+			public Node<K,V> next;
+			public Node (K k,V v)
+			{
+				this.key=k;
+				this.value=v;
+			}
+		}
+        public void put(K k,V v)
+        {
+        	Node indexNode=getNodeforKey(k);
+        	int index=getHashcodeValue(k);
+        	if(indexNode!=null)
+        	{	
+        		indexNode.value=v;
+        		return;
+        	}
+        	Node node=new Node(k,v);
+        	node.next=arr.get(index);
+        	arr.set(index, node);
+        
+        }
+        public V get(K k)
+        {
+        	Node indexNode=getNodeforKey(k);
+        	if(indexNode==null)
+        		return null;
+        	return (V) indexNode.value;
+        }
+        private Node getNodeforKey(K k)
+        {
+        	int index=getHashcodeValue(k);
+        	Node currentNode=arr.get(index);
+        	while(currentNode!=null)
+        	{
+        		if(currentNode.key==k)
+        			return currentNode;
+        		currentNode=currentNode.next;
+        	}
+        	return currentNode;
+        }
+		private int getHashcodeValue(K k) {
+			// TODO Auto-generated method stub
+			int val=Math.abs(k.hashCode()%arr.size());
+			return val;
+		}
+	}
+}
+
