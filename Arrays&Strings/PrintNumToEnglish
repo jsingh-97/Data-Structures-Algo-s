@@ -1,0 +1,72 @@
+import java.util.Scanner;
+
+//convert Number to English phrase eg. Input -12345, Output- Twelve Thousand Three Hundred Forty Five
+//Solution - break the number into chunks of three digits and solve for each chunk and then combine the result
+// example 1234505 think of it as 1|234|505 -> One Million + Two Hundred Thirty Four Thousand + Five Hundred Five
+public class PrintPhrase {
+	public static void main(String[] args) {
+		int n;
+		System.out.println("Enter number:");
+		Scanner ob=new Scanner(System.in);
+		n=ob.nextInt();
+		System.out.print(numberToWords(n));
+	}
+	  public static  String numberToWords(int num) {
+		    final String[] weight= {"","Thousand","Million","Billion"};
+	        final  String[] dict= {"","One","Two","Three","Four","Five","Six","Seven","Eight","Nine","Ten","Eleven","Twelve","Thirteen","Fourteen","Fifteen","Sixteen","Seventeen","Eighteen","Nineteen"};
+	        final  String[] tens= {"","","Twenty","Thirty","Forty","Fifty","Sixty","Seventy","Eighty","Ninety"};
+	         if(num==0)
+	             return "Zero";
+	        if(num<20)
+	            return dict[num]; 
+	        else
+	        {
+	            int pos=0;
+	            String answer="";
+	            while(num>0)
+	            {
+	                String part_value=calculatePartValue(num%1000,dict,tens);
+	                String temp=part_value;;
+                  //now combining the chunk with previous chunk
+	                if(pos>0 && !temp.isEmpty())
+	                {
+	                	temp=temp+" "+weight[pos];
+	                }
+	                if(!answer.isEmpty())
+	                {
+	                	temp=temp.isEmpty()?answer:temp+" "+answer;
+	                	
+	                }
+	                answer=temp;
+	          
+	                pos++;
+	                num=num/1000;
+	            }
+	            return answer;
+	        }
+	    }
+      //solving for each chunk of 3 digits eg. 345
+	    private static String calculatePartValue(int num,String[] dict,String[] tens)
+	         {
+	        String ans="";
+	        //set hundred value
+	        if(num/100>0)
+	         ans=ans+dict[num/100]+" Hundred";
+	        //set tens value
+	        if(num%100<20)
+	        {
+	            if(num%100==0)
+	                return ans;
+	        	ans=ans.isEmpty()?dict[num%100]:ans+" "+dict[num%100];
+	       
+	        }
+	        else{
+	            ans=ans.isEmpty()?ans+tens[(num%100)/10]:ans+" "+tens[(num%100)/10];
+	            if(num%10>0)
+	            {
+	                ans+=" "+dict[num%10];
+	            }
+	        }
+	       return ans;
+	    }
+}
