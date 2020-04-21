@@ -1,0 +1,50 @@
+//recursively solved sum of two linked lists. Easily readable code. If we do it using for loop although the complexity is same but it is not readable
+class Add {
+    
+    // This function will add the numbers represented by two linked lists
+    Node addTwoLists(Node first, Node second) {
+        // Your code here
+        //base condition here
+        return addLists(first,second,0);
+        
+    }
+    private Node addLists(Node first, Node second, int carry)
+    {
+        //base condition here when both first and second becomes null and carry==0
+        if(first==null && second ==null && carry==0)
+        return null;
+        if(first==null && second==null && carry>0)
+        {
+             Node node=new Node();
+            node.data=carry;
+            return node;
+        }
+        //when first is null but second is not
+        if(first==null && second!=null)
+        {
+            Node node=new Node();
+            int val=(second.data+carry)%10;
+            carry=(second.data+carry)/10;
+            node.data=val;
+            node.next=addLists(null,second.next,carry);
+            return node;
+        }
+        //when second is null but first is not
+        if(second==null && first!=null)
+        {
+             Node node=new Node();
+             int val=(first.data+carry)%10;
+             carry=(first.data+carry)/10;
+             node.data=val;
+             node.next=addLists(first.next,null,carry);
+            return node;
+        }
+        //when first and second both are non null
+        Node node=new Node();
+        int val=(first.data+second.data+carry)%10;
+        carry=(first.data+second.data+carry)/10;
+        node.data=val;
+        node.next=addLists(first.next,second.next,carry);
+        return node;
+    }
+}
