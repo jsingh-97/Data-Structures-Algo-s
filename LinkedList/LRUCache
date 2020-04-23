@@ -1,0 +1,125 @@
+//implementing LRU cache using HashMap and Doubly Linked List
+//HashMap stores the key and helps in O(1) look up
+//Linked List maintains the order from most frequently used(head) key  to least recently used key and helps in maintaining the order in O(1)
+
+public	class LRUCache {
+    int capacity;
+    Map<Integer,Node> cacheMap;
+    Node head;
+    Node tail;
+    private class Node{
+        int key;
+        int value;
+        Node prev;
+        Node next;
+        public Node(int key,int value)
+        {
+            this.key=key;
+            this.value=value;
+            this.prev=null;
+            this.next=null;
+        }
+        public Node()
+        {
+
+        }
+    }
+    public LRUCache(int capacity) {
+        this.capacity=capacity;
+        this.cacheMap=new HashMap<Integer,Node>();
+        head=null;
+        tail=null;
+    }
+
+    public int get(int key) {
+        //if key already exists
+        if(cacheMap.containsKey(key))
+        {
+            Node n=cacheMap.get(key);
+            removeNode(n);
+            insertNodeAtHead(n);
+            return n.value;
+        }
+        else //if doesn't exists
+            return -1;
+
+    }
+
+    public void put(int key, int value) {
+        if(capacity==0)
+            return ;
+        Node node=new Node(key,value);
+        //if key exists then update the key and change its order in linked list
+        if(cacheMap.containsKey(key))
+        {
+            removeNode(cacheMap.get(key));
+            insertNodeAtHead(node);
+            cacheMap.remove(key);
+            cacheMap.put(key,node);
+            return;
+        }
+        //if key doesn't exists
+        //if map is not full then insert key in cacheMap and at the head of linked list
+        if(cacheMap.size()<capacity)
+        {
+            insertNodeAtHead(node);
+            cacheMap.put(key,node);
+            return;
+        }
+         //if map is not full then insert key in cacheMap and update its order in linkedlist
+        int leastUsedKey=tail.key;
+        removeNode(tail);
+        insertNodeAtHead(node);
+        cacheMap.remove(leastUsedKey);
+        cacheMap.put(node.key,node);
+    }
+    //removing node from linked list
+    void removeNode(Node node)
+    {
+        if(head ==null)
+            return ;
+        //handle single node to be deleted
+        if(head==tail && node==head)
+        {
+            head=null;
+            tail=null;
+            return ;
+        }
+        //handling edge nodes if edge node equals tail
+        if(node==tail)
+        {
+            tail=tail.prev;
+            tail.next=null;
+            return ;
+        }
+        //handling edge case when node equals head
+        if(node==head)
+        {
+            head=head.next;
+            head.prev=null;
+            return ;
+        }
+        node.prev.next=node.next;
+        node.next.prev=node.prev;
+    }
+    private  void insertNodeAtHead(Node node)
+    {
+        if(head==null)
+        {
+            head=node;
+            tail=node;
+        }
+        else{
+            node.next=head;
+            head.prev=node;
+            head=node;
+        }
+    }
+}
+
+/**
+ * Your LRUCache object will be instantiated and called as such:
+ * LRUCache obj = new LRUCache(capacity);
+ * int param_1 = obj.get(key);
+ * obj.put(key,value);
+ */
