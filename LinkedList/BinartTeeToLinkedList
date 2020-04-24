@@ -1,0 +1,49 @@
+//convert binary tree to doubly linked list in place
+//use recursion
+//think of converting left subtree and right subtree and then merging them
+//Time complexity O(n).   Space complexity O(1)
+class GfG
+{
+    Node head;
+    //node pair class stores tail of left subtree and head of right subtree 
+    static class NodePair
+    {
+        Node start;
+        Node end;
+        public NodePair(Node start,Node end)
+        {
+            this.start=start;
+            this.end=end;
+        }
+    }
+    Node bToDLL(Node root)
+    {
+	 //  Your code here
+	 NodePair nodePair=convert(root);
+	 return nodePair.start;
+	
+    }
+    private static NodePair convert(Node root)
+    {
+        if(root==null)
+        return null;
+        //get linked list from left tree
+        NodePair pair1=convert(root.left);
+        //get linked list from right tree;
+        NodePair pair2=convert(root.right);
+        //merge left subtree linked list to root
+        if(pair1!=null)
+        {
+            pair1.end.right=root;
+            root.left=pair1.end;
+        }
+        //merge right subtree linked list to root
+        if(pair2!=null)
+        {
+            pair2.start.left=root;
+            root.right=pair2.start;
+        }
+        //return node pair with start as head of merged list and end as tail of merged list
+        return new NodePair(pair1==null?root:pair1.start,pair2==null?root:pair2.end);
+    }
+}
