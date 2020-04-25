@@ -1,0 +1,152 @@
+//HashMap to store key node mapping
+//Another hashMap to store frequency and keys mapping ( keys are stored in LinkedHashSet which maintains the order in which they were inserted)
+//passed 17/25 test cases on leet code
+//Linked HashSet Internally uses Doubly linked list to maintain order
+import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.Map;
+
+class LFUCache {
+  int capacity;
+  //min count stores the min frequency present in hashMap
+  int mincount;
+  //key to node hashMap
+  Map<Integer,Node> keyToNode;
+  //Linked HashSet is used to store elements in order in which they were inserted.
+  Map<Integer, LinkedHashSet<Integer>> freqToKey;
+  class Node
+  {
+    int key;
+    int value;
+    int freq;
+    public Node(int key,int value,int freq){
+      this.key=key;
+      this.value=value;
+      this.freq=freq;
+    }
+  }
+  public LFUCache(int capacity) {
+    this.mincount=0;
+    this.capacity=capacity;
+    this.keyToNode=new HashMap<Integer,Node>();
+    this.freqToKey=new HashMap<Integer,LinkedHashSet<Integer>>();
+
+  }
+
+  public int get(int key) {
+    //if key exists in Hashmap
+    if(capacity==0)
+      return -1;
+    if(keyToNode.containsKey(key))
+    {
+      Node node=keyToNode.get(key);
+      int freq=node.freq;
+      freqToKey.get(freq).remove(key);
+      if(freqToKey.isEmpty() || !freqToKey.containsKey(freq+1) )
+      {
+        LinkedHashSet<Integer> linkedHashSet=new LinkedHashSet<Integer>();
+        linkedHashSet.add(key);
+        freqToKey.put(freq+1,linkedHashSet);
+      }
+      else
+      {
+        freqToKey.get(freq+1).add(key);
+      }
+      node.freq=node.freq+1;
+      keyToNode.remove(key);
+      keyToNode.put(key,node);
+      if(mincount==freq && freqToKey.get(freq).isEmpty())
+      {
+        mincount=freq+1;
+
+      }
+      return node.value;
+    }
+    return -1;
+    //
+  }
+
+  public void put(int key, int value) {
+    //if key exists then update it
+    if(keyToNode.containsKey(key))
+    {
+      Node node =keyToNode.get(key);
+      int freq=keyToNode.get(key).freq;
+      freqToKey.get(freq).remove(key);
+      if(freqToKey.isEmpty() || !freqToKey.containsKey(freq+1))
+      {
+        LinkedHashSet<Integer> linkedHashSet=new LinkedHashSet<Integer>();
+        linkedHashSet.add(key);
+        freqToKey.put(freq+1,linkedHashSet);
+      }
+      else
+      {
+        freqToKey.get(freq+1).add(key);
+      }
+      node.freq=node.freq+1;
+      node.value=value;
+      keyToNode.remove(key);
+      keyToNode.put(key,node);
+      return;
+    }
+    // if key doesn't exists but cache is not full
+    if(keyToNode.size()<capacity)
+    {
+      Node node =new Node (key,value,1);
+      keyToNode.put(key,node);
+      if(freqToKey.isEmpty() || !freqToKey.containsKey(1))
+      {
+        LinkedHashSet<Integer> linkedHashSet=new LinkedHashSet<Integer>();
+        linkedHashSet.add(key);
+        freqToKey.put(1,linkedHashSet);
+      }
+      else
+      {
+        freqToKey.get(1).add(key);
+      }
+      mincount=1;
+      return ;
+    }
+    //if cache is also full
+    if(keyToNode.size()>=capacity)
+    {
+      int minKey=1;
+      if(freqToKey.get(mincount).iterator().hasNext()) {
+         minKey = freqToKey.get(mincount).iterator().next();
+      }
+      keyToNode.remove(minKey);
+      freqToKey.get(mincount).remove(minKey);
+      Node node=new Node(key,value,1);
+      mincount=1;
+      if(freqToKey.isEmpty() || !freqToKey.containsKey(1))
+      {
+        LinkedHashSet<Integer> linkedHashSet=new        LinkedHashSet<Integer>();
+        linkedHashSet.add(key);
+        freqToKey.put(1,linkedHashSet);
+      }
+      else
+      {
+        freqToKey.get(1).add(key);
+      }
+      keyToNode.put(key,node);
+      return;
+    }
+  }
+  public static void main(String[] args) {
+
+    LFUCache cache = new LFUCache( 2 /* capacity */ );
+
+    cache.put(1, 1);
+    cache.put(2, 2);
+   // System.out.println(cache.get(1));      
+    cache.put(3, 3);    // evicts key 2
+   // System.out.println(cache.get(2));       
+   // System.out.println(cache.get(3));      
+    cache.put(4, 4);    // evicts key 1.
+    System.out.println(cache.get(1));      
+    System.out.println(cache.get(3));      
+    System.out.println(cache.get(4));
+    System.out.println(cache.get(2)); 
+  }
+
+}
