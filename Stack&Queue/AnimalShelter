@@ -1,0 +1,101 @@
+//An animal shelter, which holds only dogs and cats, operates on a strictly"first in, first out" basis. People must adopt //either the "oldest" (based on arrival time) of all animals at the shelter, or they can select whether they would prefer a //dog or a cat (and will receive the oldest animal of that type). They cannot select which specific animal they would like. //Create the data structures to maintain this system and implement operations such as enqueue, dequeueAny, dequeueDog, and //dequeueCat. You may use the built-in Linked L is t data structure.
+
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Scanner;
+import java.util.Stack;
+
+class Animal {
+private String name;
+private int order;
+private void setOrder(int order)
+{
+  this.order=order;
+}
+public int getOrder()
+{
+  return this.order;
+}
+public Animal(){}
+public Animal(String name)
+{
+  this.name=name;
+}
+public static class AnimalQueue{
+  LinkedList<Dog> dogs;
+  LinkedList<Cat> cats;
+  private  int timestamp;
+  public AnimalQueue()
+  {
+    this.dogs=new LinkedList<>();
+    this.cats=new LinkedList<>();
+    this.timestamp=0;
+  }
+
+  public void enqueue(Animal animal) {
+    timestamp++;
+    animal.setOrder(timestamp);
+    if(animal instanceof Dog)
+    {
+      dogs.addLast((Dog) animal);
+      return;
+    }
+    cats.addLast((Cat) animal);
+  }
+
+  public void dequeueDog() {
+    dogs.removeFirst();
+  }
+
+  public void dequeueCat() {
+    cats.removeFirst();
+  }
+
+  public void dequeueAny() {
+    if(dogs.size()==0)
+       dequeueCat();
+    else if(cats.size()==0)
+      dequeueDog();
+      else {
+        Dog d=dogs.peek();
+        Cat c=cats.peek();
+      if (d.getOrder()<c.getOrder())
+        dequeueDog();
+      else
+        dequeueCat();
+    }
+  }
+}
+  public static void main(String[] args) {
+
+    AnimalQueue animalQueue=new AnimalQueue();
+    Dog dog1=new Dog("jass");
+    Dog dog2=new Dog("nim");
+    Cat cat1=new Cat("ranjit");
+    Dog dog3=new Dog("miki");
+    Cat cat2=new Cat("hardip");
+    animalQueue.enqueue(dog1);
+    animalQueue.enqueue(dog2);
+    animalQueue.enqueue(cat1);
+    animalQueue.enqueue(dog3);
+    animalQueue.enqueue(cat2);
+    animalQueue.dequeueDog();
+    animalQueue.dequeueCat();
+    animalQueue.dequeueAny();
+}
+
+
+  static class Dog extends Animal{
+
+    public Dog(String s) {
+      super(s);
+    }
+  }
+  static class Cat extends Animal{
+    public Cat(String s) {
+      super(s);
+    }
+  }
+}
