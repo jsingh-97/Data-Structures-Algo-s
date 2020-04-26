@@ -1,0 +1,28 @@
+class SortStack{
+	public Stack<Integer> sort(Stack<Integer> s)
+	{
+		//add code here.
+		Stack <Integer> st1=new Stack<Integer>();
+		while(!s.isEmpty())
+		{
+		    int item=s.pop();
+		    int count=0;
+		    while(!st1.isEmpty() && st1.peek()>=item)
+		    {
+		         
+		        s.push(st1.pop());
+		        count++;
+		    }
+		    st1.push(item);
+		    if(count!=0)
+		    {
+		        while(count!=0)
+		        {
+		            st1.push(s.pop());
+		            count--;
+		        }
+		    }
+		}
+		return st1;
+	}
+}
