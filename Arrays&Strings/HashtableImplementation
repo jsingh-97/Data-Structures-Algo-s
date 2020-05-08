@@ -35,7 +35,7 @@ public class HashDemo
         //this method prints all key value pairs in the HashMap
         public void print() {
 			// TODO Auto-generated method stub
-			for(int i=0;i<4;i++)
+			for(int i=0;i<capacity;i++)
 			{
 				if(arr.get(i)!=null)
 				{
