@@ -1,0 +1,21 @@
+Linked HashMap maintains the order of insertion by maintaining doubly linked list in addition to arrayList and singly list of nodes which happens in hashmap
+Hashmap - arraylist of nodes (where at each index we have singly linked list)
+Linked Hashmap - arraylist of nodes (where at each index we have singly linked list) + we maintain a doubly linked list which decides the order of insertion with two extra pointers i.e before and after
+Insertion is - O(1) - insert in arraylist and update doubly linked list.
+Updation is  - O(1) - update in arraylist
+Look Up is   - O(1) - get val from arraylist
+Deletion is  - O(1) - we have to delete from array list + delete from doubly linked list
+
+Challenges in deletion
+How can we delete from doubly linked list without traversing it ?
+For this we have to make separate hashtable for Key and node.Get node from hashtable and update after of its before node and before of its after node.
+
+HashTable<K,Node>()=new HashTable<>();
+ArrayList<Node> ls=new ArrayList<>(capacity);
+Node<K,V> {
+  K key;
+  V val;
+  Node next;
+  Node before;
+  Node after;
+}
