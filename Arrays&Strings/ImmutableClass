@@ -1,0 +1,53 @@
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+    /*Declare the class as final so it can’t be extended.
+    Make all fields private so that direct access is not allowed.
+    Don’t provide setter methods for variables
+    Make all mutable fields final so that it’s value can be assigned only once.
+    Initialize all the fields via a constructor performing deep copy.
+    Perform cloning of objects in the getter methods to return a copy rather than returning the actual object reference.*/
+// Driver class
+  public class Immutable
+  {
+
+    public  final static class Student
+    {
+      private final String name;
+      private final int regNo;
+      private final List<Integer> marks;
+      public Student(String name,Integer regNo,List<Integer> ls) {
+        this.name = name;
+        this.regNo = regNo;
+        //making new list by cloning
+        this.marks = new ArrayList<>(ls);
+      }
+      public String getName()
+      {
+        return name;
+      }
+      public int getRegNo()
+      {
+        return regNo;
+      }
+      public List<Integer> getList()
+      {
+        // return new list
+        return new ArrayList<>(marks);
+      }
+    }
+
+    public static void main(String args[])
+    {
+      List<Integer> ls=new ArrayList<>();
+      ls.add(10);ls.add(20);ls.add(30);
+      Student s = new Student("ABC", 101,ls);
+      System.out.println(s.getName());
+      System.out.println(s.getRegNo());
+      ls.add(102);
+      System.out.println(s.getList());
+      // Uncommenting below line causes error
+      // s.regNo = 102;
+    }
+  }
