@@ -6,7 +6,7 @@ In place sorting algorithm
 Compared to Merge sort, Prefer for arrays as it required no auxilliary space for storing additional arrays.
 Most practical implementations of Quick Sort use randomized version. The randomized version has expected time complexity of O(nLogn) in which we pick random index as pivot
  */
-class Test{
+class QuickSort{
   public static void main(String[] args)
   {
     System.out.println("sdf");
