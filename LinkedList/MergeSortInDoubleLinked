@@ -1,3 +1,5 @@
+// Merge sort Complexity is O(nlogn) in all three cases(best,worst,average)
+// Space =O(1) for Linked List but O(n) for arrays
 class LinkedList
 {
        static Node split(Node head) { 
