@@ -1,0 +1,48 @@
+class LinkedList
+{
+       static Node split(Node head) { 
+        Node fast = head, slow = head; 
+        while (fast.next != null && fast.next.next != null) { 
+            fast = fast.next.next; 
+            slow = slow.next; 
+        } 
+        Node temp = slow.next; 
+        slow.next = null; 
+        return temp; 
+    } 
+    static Node sortDoubly(Node head)
+    {
+        // add your code here
+        if(head==null || head.next==null)
+        return head;
+        Node middle=split(head);
+        Node left=sortDoubly(head);
+        Node right=sortDoubly(middle);
+        Node sortedList=mergeSortedList(left,right);
+        return sortedList;
+    }
+    static Node mergeSortedList(Node left,Node right)
+    {
+        if(left==null)return right;
+        if(right==null) return left;
+        Node result=null;
+            if(left.data<=right.data)
+            {
+                result=left;
+                Node resultNext=mergeSortedList(left.next,right);
+                result.next=resultNext;
+                resultNext.prev=result;
+                result.prev=null;
+            }
+            else
+            {
+                result=right;
+                Node resultNext=mergeSortedList(left,right.next);
+                result.next=resultNext;
+                resultNext.prev=result;
+                result.prev=null;
+            }
+        return result;
+    }
+    
+}
