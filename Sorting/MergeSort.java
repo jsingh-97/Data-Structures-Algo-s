@@ -7,7 +7,6 @@ Merge Sort is used to count number of inversions needed to make array sorted. */
 class MergeSort{
   public static void main(String[] args)
   {
-    System.out.println("sdf");
     int[] arr=new int[]{5,2,18,3,1};
     mergeSort(arr,0,arr.length-1);
     for(int i=0;i<arr.length;i++)
