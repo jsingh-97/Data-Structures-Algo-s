@@ -1,6 +1,6 @@
 import java.util.Scanner;
  ///rotating matrix in place using layer by layer approach 
- //think of 4*4 matrix and analyse how elements will be shifter in each layer
+ //think of 4*4 matrix and analyse how elements will be shifted in each layer
 public class TestClass 
 {
 	public static void main(String[] args)
