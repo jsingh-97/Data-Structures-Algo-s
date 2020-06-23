@@ -1,0 +1,66 @@
+// declare constructor private in all the classes and make getInstance function public static 
+public class LazyInitializedSingleton {
+
+    private static LazyInitializedSingleton instance;
+    
+    private LazyInitializedSingleton(){}
+    
+    public static LazyInitializedSingleton getInstance(){
+        if(instance == null){
+            instance = new LazyInitializedSingleton();
+        }
+        return instance;
+    }
+}
+/*Instance is created only when it is required but not thread safe*/
+public class EagerInitializedSingleton {
+    
+    private static final EagerInitializedSingleton instance = new EagerInitializedSingleton();
+    
+    //private constructor to avoid client applications to use constructor
+    private EagerInitializedSingleton(){}
+
+    public static EagerInitializedSingleton getInstance(){
+        return instance;
+    }
+}
+/*It is thread safe becuase static variables are initialised at the time of class loading which makes it thread safe but it always creates instance even when not required*/
+
+public class ThreadSafeSingleton {
+
+    private static ThreadSafeSingleton instance;
+    
+    private ThreadSafeSingleton(){}
+    /*It is thread safe but performance overhead due to cost associated with synchronised keyword*/
+    public static synchronized ThreadSafeSingleton getInstance(){
+        if(instance == null){
+            instance = new ThreadSafeSingleton();
+        }
+        return instance;
+    }
+    /* It is thread safe and fast*/
+    public static ThreadSafeSingleton getInstanceUsingDoubleLocking(){
+    if(instance == null){
+        synchronized (ThreadSafeSingleton.class) {
+            if(instance == null){
+                instance = new ThreadSafeSingleton();
+            }
+        }
+    }
+    return instance;
+}
+public class BillPughSingleton {
+
+    private BillPughSingleton(){}
+    
+    private static class SingletonHelper{
+        private static final BillPughSingleton INSTANCE = new BillPughSingleton();
+    }
+    
+    public static BillPughSingleton getInstance(){
+        return SingletonHelper.INSTANCE;
+    }
+  }
+  /* Bill pugh Implementation -> It is thread safe and fast as we have not used synchronised keyword. Inner class is only loaded when getInstance method is called*/
+}
+
