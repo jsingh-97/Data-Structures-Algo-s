@@ -1,0 +1,37 @@
+
+public class ShallowCopy {
+  static class Address
+  {
+    String city;
+    String state;
+
+    public Address(String city, String state) {
+      this.city = city;
+      this.state = state;
+    }
+  }
+  static class Person implements Cloneable
+  {
+    int pid;
+    Address address;
+
+
+    public Object clone() throws CloneNotSupportedException
+    {
+      //While copying the object type field the reference is copied to Y i.e object Y will point to same location as pointed out by X. If the field value is a primitive type it copies the value of the primitive type
+      return super.clone();
+    }
+    public Person(int pid, Address a) {
+      this.pid = pid;
+      this.address = a;
+    }
+  }
+  public static void main(String[] args) throws CloneNotSupportedException
+  {
+    Person p1=new Person(1,new Address("patiala","punjab"));
+    Person p2=(Person) p1.clone();
+    p2.pid=2;
+    p2.address.city="Amritsar";
+    System.out.println(p2);
+  }
+}
