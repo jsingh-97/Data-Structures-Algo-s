@@ -1,0 +1,46 @@
+//Given a collection of numbers that might contain duplicates, return all possible unique permutations.
+// eg 1,1,2 -> [[1,1,2],[1,2,1],[2,1,1]]
+
+class Solution {
+    public List<List<Integer>> permuteUnique(int[] nums) {
+        boolean[] visited=new boolean[nums.length];
+        int start=0;
+        List<List<Integer>> res=new ArrayList<>();
+        List<Integer> ls=new ArrayList<>();
+        //sorting the numbers 
+        Arrays.sort(nums);
+        permute(nums,visited,start,res,ls);
+        return res;
+    }
+    private static void permute(int[] nums,boolean[] visited,int start,List<List<Integer>>res,List<Integer> ls)
+    {
+       if(ls.size()==nums.length)
+       {
+           res.add(new ArrayList<>(ls));
+           return;
+       }
+        else
+        {
+            for(int i=start;i<nums.length;i++)
+            {
+                // check if this node is visited
+                if(visited[i]==false)
+                {
+                    //skipping the number if it is equal to its previous number and the previous number has not been visited
+                    if(i>0 && nums[i]==nums[i-1] && visited[i-1]==false) continue;
+                    visited[i]=true;
+                    ls.add(nums[i]); //add this node to list
+                    permute(nums,visited,start,res,ls); // permute for other numbers
+                    ls.remove(ls.size()-1);//remove the above element from the list
+                    visited[i]=false;
+                }
+            }
+        }
+    }
+    public static void main(String args[])
+    {
+      List<Integer> list=Arrays.asList(1, 1, 2);
+      List<List<Integer>> ans=permuteUnique(list);
+      
+    }
+}
