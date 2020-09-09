@@ -1,0 +1,74 @@
+//Given a collection of intervals, merge all overlapping intervals.
+// example [[1,3],[2,6],[8,10],[15,18]] -> [[1,6],[8,10],[15,18]]
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Queue;
+
+class Demo {
+
+  public static class Node{
+    int st;
+    int et;
+    public Node(int a,int b)
+    {
+      this.st=a;
+      this.et=b;
+    }
+  }
+  public static int[][] merge(int[][] intervals) {
+    if(intervals.length<=1)
+      return intervals;
+    Comparator<int[]> comp=new Comparator<>()
+    {
+      @Override
+      public int compare(int[]a,int[]b)
+      {
+        if(a[0]!=b[0])
+          return a[0]-b[0];
+        return a[1]-b[1];
+      }
+    };
+    //sort the intervals based on starting time
+    Arrays.sort(intervals,comp);
+    List<Node> ls=new ArrayList<>();
+    ls.add(new Node(intervals[0][0],intervals[0][1]));
+    int i=1;
+    while(i<intervals.length)
+    {
+      // get the last added interval and check if it can be merged with it
+      Node n=ls.get(ls.size()-1);
+      if(n.et>=intervals[i][0]) // if they intersect then merge them
+      {
+        ls.remove(ls.size()-1);
+        // take start time as minimum of two intersecting intervals and end time as maximum of two intersecting intervals 
+        ls.add(new Node(n.st,Math.max(intervals[i][1],n.et)));
+      }
+      else //if current interval didn't intersect add it to list
+      {
+        ls.add(new Node(intervals[i][0],intervals[i][1]));
+      }
+      i++;
+    }
+    int[][] ans=new int[ls.size()][2];
+    for(int j=0;j<ls.size();j++)
+    {
+      ans[j][0]=ls.get(j).st;
+      ans[j][1]=ls.get(j).et;
+    }
+    return ans;
+  }
+  public  static  void  main(String[] args){
+    int[][] interval={
+        {4,5},
+        {4,7},
+        {1,5}
+    };
+    int[][] ans=merge(interval);
+    System.out.println("Solved");
+  }
+}
