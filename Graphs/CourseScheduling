@@ -1,0 +1,55 @@
+Question 
+There are a total of numCourses courses you have to take, labeled from 0 to numCourses - 1. You are given an array prerequisites where prerequisites[i] = [ai, bi] indicates that you must take course bi first if you want to take course ai.
+For example, the pair [0, 1], indicates that to take course 0 you have to first take course 1.
+Return true if you can finish all courses. Otherwise, return false.
+
+
+Approach
+  This is the application of finding topological sorting of the directed graph
+1. First of all build the adjacency matrix of the graph.
+2. Now add the course with no incoming edge in the queue.
+3. While queue is not empty do this
+   3.1 Remove the course i.e schedule it
+   3.2 Remove the outgoing edges associated with that course
+   3.3 If there is an edge with no incoming edge then add it to queue.
+4. Return scheduled courses is equal to total courses.
+
+class Solution {
+    public boolean canFinish(int numCourses, int[][] prerequisites) {
+        int[][] adjacencyMat=new int[numCourses][numCourses];
+        int[] incomingEdge=new int[numCourses];
+        //filling adjacency matrix
+        for(int i=0;i<prerequisites.length;i++)
+        {
+            adjacencyMat[prerequisites[i][1]][prerequisites[i][0]]=1;
+            incomingEdge[prerequisites[i][0]]++;
+        }
+        Queue<Integer> q=new LinkedList<>();
+        int completedCourses=0;
+        //add those courses first which have 0 incoming edge in the queue
+        for(int i=0;i<numCourses;i++)
+        {
+            if(incomingEdge[i]==0)
+            {
+                q.offer(i);
+            }
+        }
+        
+        while(!q.isEmpty())
+        {
+            int courseNum=q.poll();
+            completedCourses++; // schedule the course
+            for(int i=0;i<numCourses;i++)
+            {
+                if(adjacencyMat[courseNum][i]==1)
+                {
+                    adjacencyMat[courseNum][i]=0;
+                    if(--incomingEdge[i]==0)
+                        q.offer(i);// adding those courses which have 0 incoming edge after this course is removed
+
+                }
+            }
+        }
+        return completedCourses==numCourses;
+    }
+}
