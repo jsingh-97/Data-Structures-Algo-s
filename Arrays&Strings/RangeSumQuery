@@ -1,0 +1,72 @@
+/*
+Given an integer array nums, handle multiple queries of the following types:
+  Update the value of an element in nums.
+  Calculate the sum of the elements of nums between indices left and right inclusive where left <= right.
+
+*/
+
+class NumArray {
+    int[] nums;
+    int[] segTree; // segment tree
+    public NumArray(int[] nums) {
+        this.nums=new int[nums.length];
+        for(int i=0;i<nums.length;i++)
+        {
+            this.nums[i]=nums[i];
+        }
+        int x = (int)(Math.ceil(Math.log(nums.length)/Math.log(2)));
+        int size=2*((int)Math.pow(2,x))-1;
+        segTree=new int[size];
+        constructSegmentTree(nums,0,0,nums.length-1);
+    }
+    
+    public void update(int index, int val) {
+        int diff = val-nums[index];
+        updateUtil(0,nums.length-1,index,diff,0); // update value in segment tree
+        nums[index] = val; // update value in the array
+    }
+    
+    public int sumRange(int left, int right) {
+        return sumRangeUtil(left,right,0,nums.length-1,0);
+    }
+    private void constructSegmentTree(int[] nums,int pos,int low,int high)
+    {
+        if(low==high)
+        {
+            segTree[pos]=nums[low];
+            return;
+        }
+        int mid= getMid(low,high);
+        constructSegmentTree(nums,2*pos+1,low,mid);
+        constructSegmentTree(nums,2*pos+2,mid+1,high);
+        segTree[pos]=segTree[2*pos+1]+segTree[2*pos+2];
+        return;
+    }
+    private void updateUtil(int low,int high,int index,int diff,int pos)
+    {
+        if(index==high && high==low)
+        {
+            segTree[pos]+=diff; //updating the leaf node in segment Tree
+            return;
+        }
+        if(high<index || index<low) return;
+        int mid = getMid(low,high);
+        updateUtil(low,mid,index,diff,2*pos+1);
+        updateUtil(mid+1,high,index,diff,2*pos+2);
+        segTree[pos]=segTree[2*pos+1]+segTree[2*pos+2];
+    }
+    private int sumRangeUtil(int left,int right,int low,int high,int pos)
+    {
+        // base case if low and high fits in left and right
+        if(left<=low && right>=high) return segTree[pos];
+        // if there is not overlap
+        if(high<left || low>right) return 0;
+        int mid=getMid(low,high);
+        return sumRangeUtil(left,right,low,mid,2*pos+1)+sumRangeUtil(left,right,mid+1,high,2*pos+2);
+        
+    }
+    private int getMid(int low,int high)
+    {
+        return low+(high-low)/2;
+    }
+}
