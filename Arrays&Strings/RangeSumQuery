@@ -44,7 +44,7 @@ class NumArray {
     }
     private void updateUtil(int low,int high,int index,int diff,int pos)
     {
-        if(index==high && high==low)
+        if (index==high && high==low)
         {
             segTree[pos]+=diff; //updating the leaf node in segment Tree
             return;
