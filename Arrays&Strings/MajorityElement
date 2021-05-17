@@ -10,7 +10,8 @@ class Solution {
         {
                 
             if(i.equals(candidate1)) {      
-count1++;}
+            count1++;
+            }
             else if(i.equals(candidate2)) count2++;
             else if(count1==0) {
                 candidate1=i;
