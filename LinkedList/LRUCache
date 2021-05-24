@@ -66,7 +66,7 @@ public	class LRUCache {
             cacheMap.put(key,node);
             return;
         }
-         //if map is not full then insert key in cacheMap and update its order in linkedlist
+         //if map is full then delete least recently used key in cacheMap and update the linkedlist
         int leastUsedKey=tail.key;
         removeNode(tail);
         insertNodeAtHead(node);
