@@ -1,0 +1,36 @@
+/*
+Given an integer array nums, return true if there exists a triple of indices (i, j, k) such that i < j < k and nums[i] < nums[j] < nums[k]. If no such indices exists, return false.
+
+
+*/
+
+
+class Solution {
+    public boolean increasingTriplet(int[] nums) {
+       if(nums.length<3)
+           return false;
+        // int[] rightMax=new int[nums.length];
+        // int minleft=nums[0];
+        // int maxright=nums[nums.length-1];
+        // for(int i=nums.length-2;i>=0;i--)
+        // {
+        //     rightMax[i]=maxright;
+        //     maxright=Math.max(maxright,nums[i]);
+        // }
+        // for(int i=1;i<nums.length-1;i++)
+        // {
+        //     if(nums[i]<rightMax[i] && minleft<nums[i])
+        //         return true;
+        //     minleft=Math.min(minleft,nums[i]);
+        // }
+        // return false;
+        int a = Integer.MAX_VALUE,b=Integer.MAX_VALUE;
+        for(int n:nums)
+        {
+            if(n<=a) a=n;
+            else if(n<=b) b=n;
+            else return true;
+        }
+        return false;
+    }
+}
