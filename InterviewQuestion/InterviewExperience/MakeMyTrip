@@ -1,0 +1,27 @@
+Round 1 
+In this round I was asked 2 basic DS algo questions. 
+Round 2
+1. Introduce yourself
+2. Tell about your previous work experience
+3. How i used kafka service in my application
+Then he asked 3 DS Algo Questions for which i need to write full fledged function on any editor
+1. Reverse a linked list in group of k nodes
+    https://www.geeksforgeeks.org/reverse-a-list-in-groups-of-given-size/
+2. Number of unique BST's that can be formed given n node numbered from 0 to n-1     
+    https://leetcode.com/problems/unique-binary-search-trees/
+3. Related to Permutations of string
+
+Round 3 (It was with Director of Engineering 12 years experienced)
+1. Introduce yourself
+2. Work experience in the previous company
+Then he asked below questions
+1. Can you form string from the given dictionary
+https://leetcode.com/problems/word-break/
+2. Design LRU cache
+3. Desgin LLD of CAR Parking System
+4. Shortening URL
+5. What is singleTon Class?
+6. What is reflection in java?
+7. Tell me about different design patterns like singleton, factory design patters?
+8. Which design pattersn you used in the previous company?
+9. And few others questions on my past projects.
