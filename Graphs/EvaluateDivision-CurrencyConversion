@@ -43,7 +43,6 @@ class Solution {
                 double ans=dfs(neighbour.getKey(),end,graph,visited);
                 if(ans!=-1)
                     return ans*neighbour.getValue();
-                visited.remove(source);
             }
         }
         return -1;
