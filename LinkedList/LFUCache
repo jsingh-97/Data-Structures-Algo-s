@@ -1,136 +1,137 @@
 //HashMap to store key node mapping
-//Another hashMap to store frequency and keys mapping ( keys are stored in LinkedHashSet which maintains the order in which they were inserted)
-//passed 17/25 test cases on leet code
-//Linked HashSet Internally uses Doubly linked list to maintain order
+//Another hashMap to store frequency and Doubly linkedlist (double linked list of all the nodes with same frequency)
+
 import java.util.HashMap;
-import java.util.LinkedHashSet;
 import java.util.Map;
 
 class LFUCache {
-  int capacity;
-  //min count stores the min frequency present in hashMap
-  int mincount;
-  //key to node hashMap
-  Map<Integer,Node> keyToNode;
-  //Linked HashSet is used to store elements in order in which they were inserted.
-  Map<Integer, LinkedHashSet<Integer>> freqToKey;
-  class Node
-  {
-    int key;
-    int value;
-    int freq;
-    public Node(int key,int value,int freq){
-      this.key=key;
-      this.value=value;
-      this.freq=freq;
+    HashMap<Integer,Node> cacheMap;
+    HashMap<Integer,DLL> freqMap;
+    int minFreq;
+    int capacity;
+    class Node{
+      int key;
+      int val;
+      int count;
+      Node prev;
+      Node next;
+      public Node(int key,int val){
+        this.key=key;
+        this.val=val;
+        this.count=1;
+        this.next=null;
+        this.prev=null;
+      }
     }
-  }
-  public LFUCache(int capacity) {
-    this.mincount=0;
-    this.capacity=capacity;
-    this.keyToNode=new HashMap<Integer,Node>();
-    this.freqToKey=new HashMap<Integer,LinkedHashSet<Integer>>();
+    public LFUCache(int capacity) {
+        cacheMap=new HashMap<Integer,Node>(capacity);
+        freqMap=new HashMap<Integer,DLL>();
+        minFreq=0;
+        this.capacity=capacity;
+    }
+    private void removeNodeFromFreqMap(Node node){
+      DLL dll=freqMap.get(node.count);
+      //remove node from the DLL of count
+      dll.removeNode(node);
+      if(dll.head==null && node.count==minFreq){
+        minFreq++;
+      }
+    }
+    private void insertNodeInFreqMap(Node node){
+      if(!freqMap.containsKey(node.count)){
+        freqMap.put(node.count,new DLL());
+      }
+      DLL dll=freqMap.get(node.count);
+      //insert node at the head of DLL of new count
+      dll.insertAtHead(node);
+    }
+    public int get(int key) {
+        if(cacheMap.containsKey(key)){
+          //get node's address from cachemap
+          Node node=cacheMap.get(key);
+          removeNodeFromFreqMap(node);
+          //update the count
+          node.count=node.count+1;
+          insertNodeInFreqMap(node);
+          return node.val;
+        }else{
+          return -1;
+        }
+    }
+    
+    public void put(int key, int value) {
+      //edge cases
+      if(capacity==0)return;
+      //if key exists
+      if(cacheMap.containsKey(key)){
+        Node node=cacheMap.get(key);
 
-  }
-
-  public int get(int key) {
-    //if key exists in Hashmap
-    if(capacity==0)
-      return -1;
-    if(keyToNode.containsKey(key))
-    {
-      Node node=keyToNode.get(key);
-      int freq=node.freq;
-      freqToKey.get(freq).remove(key);
-      if(freqToKey.isEmpty() || !freqToKey.containsKey(freq+1) )
-      {
-        LinkedHashSet<Integer> linkedHashSet=new LinkedHashSet<Integer>();
-        linkedHashSet.add(key);
-        freqToKey.put(freq+1,linkedHashSet);
+        removeNodeFromFreqMap(node);
+        //update the count
+        node.count=node.count+1;
+        node.val=value;
+        insertNodeInFreqMap(node);
+        cacheMap.put(key,node);
+      }else{
+        Node node=new Node(key,value);
+        //cache is not full
+        if(cacheMap.size()<capacity){
+          minFreq=1;
+          //insert in frequencyMap
+          insertNodeInFreqMap(node);
+          //insert in cacheMap
+          cacheMap.put(key,node);
+        }else{
+          //cache is full
+          DLL dll=freqMap.get(minFreq); 
+          cacheMap.remove(dll.tail.key);
+          dll.removeNode(dll.tail);
+          cacheMap.put(key,node);
+          minFreq=1;
+          insertNodeInFreqMap(node);
+        }
+       
+        
       }
-      else
-      {
-        freqToKey.get(freq+1).add(key);
-      }
-      node.freq=node.freq+1;
-      keyToNode.remove(key);
-      keyToNode.put(key,node);
-      if(mincount==freq && freqToKey.get(freq).isEmpty())
-      {
-        mincount=freq+1;
-
-      }
-      return node.value;
     }
-    return -1;
-    //
-  }
-
-  public void put(int key, int value) {
-    //if key exists then update it
-    if(keyToNode.containsKey(key))
-    {
-      Node node =keyToNode.get(key);
-      int freq=keyToNode.get(key).freq;
-      freqToKey.get(freq).remove(key);
-      if(freqToKey.isEmpty() || !freqToKey.containsKey(freq+1))
-      {
-        LinkedHashSet<Integer> linkedHashSet=new LinkedHashSet<Integer>();
-        linkedHashSet.add(key);
-        freqToKey.put(freq+1,linkedHashSet);
-      }
-      else
-      {
-        freqToKey.get(freq+1).add(key);
-      }
-      node.freq=node.freq+1;
-      node.value=value;
-      keyToNode.remove(key);
-      keyToNode.put(key,node);
-      return;
+  
+  class DLL{
+    Node head;
+    Node tail;
+    DLL(){
+      head=null;
+      tail=null;
     }
-    // if key doesn't exists but cache is not full
-    if(keyToNode.size()<capacity)
-    {
-      Node node =new Node (key,value,1);
-      keyToNode.put(key,node);
-      if(freqToKey.isEmpty() || !freqToKey.containsKey(1))
-      {
-        LinkedHashSet<Integer> linkedHashSet=new LinkedHashSet<Integer>();
-        linkedHashSet.add(key);
-        freqToKey.put(1,linkedHashSet);
+    //insert node at head in the DLL
+    public void insertAtHead(Node node){
+      //if head is null
+      if(head==null){
+        head=node;
+        tail=head;
+        head.next=null;head.prev=null;
+      }else{
+        node.next=head;
+        head.prev=node;
+        head=node;
       }
-      else
-      {
-        freqToKey.get(1).add(key);
-      }
-      mincount=1;
-      return ;
     }
-    //if cache is also full
-    if(keyToNode.size()>=capacity)
-    {
-      int minKey=1;
-      if(freqToKey.get(mincount).iterator().hasNext()) {
-         minKey = freqToKey.get(mincount).iterator().next();
+    //removes node from the DLL
+    public void removeNode(Node node){
+      //if this is the only node in DLL
+      if(head==tail){
+        head=null;
+        tail=null;
+      }else if(head==node){
+        head=node.next;
+        head.prev=null;
+      }else if(tail==node){
+        tail=node.prev;
+        tail.next=null;
+      }else{
+        node.prev.next=node.next;
+        node.next.prev=node.prev;
       }
-      keyToNode.remove(minKey);
-      freqToKey.get(mincount).remove(minKey);
-      Node node=new Node(key,value,1);
-      mincount=1;
-      if(freqToKey.isEmpty() || !freqToKey.containsKey(1))
-      {
-        LinkedHashSet<Integer> linkedHashSet=new        LinkedHashSet<Integer>();
-        linkedHashSet.add(key);
-        freqToKey.put(1,linkedHashSet);
-      }
-      else
-      {
-        freqToKey.get(1).add(key);
-      }
-      keyToNode.put(key,node);
-      return;
-    }
+    }    
   }
   public static void main(String[] args) {
 
