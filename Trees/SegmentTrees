@@ -1,0 +1,45 @@
+import java.util.*;
+public class SegmentTree {
+    int[] nums;
+    int[] segmentTree;
+    SegmentTree(int[] nums){
+        this.nums=nums;
+        this.segmentTree=new int[4*nums.length];
+    }
+
+    public void buildSegmentTree(int pos,int low,int high){
+        if(low==high){
+            segmentTree[pos]=nums[low];
+            return ;
+        }else{
+            int mid=(low+high)/2;
+            buildSegmentTree(2*pos+1,low,mid);
+            buildSegmentTree(2*pos+2,mid+1,high);
+            segmentTree[pos]=segmentTree[2*pos+1]+segmentTree[2*pos+2];
+        }
+    }
+
+    public int query(int pos, int l,int r,int low,int high){
+        //complete overlap
+        if(low>=l && high<=r) return segmentTree[pos];
+        // no overlap
+        else if(r<low || l>high) return 0;
+        else{
+            int mid=(low+high)/2;
+            int leftSegmentTree=query(2*pos+1,l,r,low,mid);
+            int rightSegmentTree=query(2*pos+2,l,r,mid+1,high);
+            return leftSegmentTree+rightSegmentTree;
+        }
+    }
+
+
+
+    public static void main(String[] args) {
+        Scanner sc=new Scanner(System.in);
+        int[] nums=new int[]{5,4,1,2,7,6};
+        SegmentTree segmentTree=new SegmentTree(nums);
+        segmentTree.buildSegmentTree(0,0,nums.length-1);
+        System.out.println(segmentTree.query(0,0,3,0,nums.length-1));
+    }
+}
+
