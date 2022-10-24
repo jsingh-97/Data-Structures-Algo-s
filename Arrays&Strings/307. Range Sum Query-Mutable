@@ -1,0 +1,59 @@
+class NumArray {
+    int[] nums;
+    int[] segmentTree;
+    public NumArray(int[] nums) {
+        this.nums=nums;
+        this.segmentTree=new int[4*nums.length];
+        buildSegmentTree(0,0,nums.length-1);
+    }
+    private void buildSegmentTree(int pos,int low,int high){
+        if(low==high){
+            segmentTree[pos]=nums[low];
+            return ;
+        }else{
+            int mid=(low+high)/2;
+            buildSegmentTree(2*pos+1,low,mid);
+            buildSegmentTree(2*pos+2,mid+1,high);
+            segmentTree[pos]=segmentTree[2*pos+1]+segmentTree[2*pos+2];
+        }
+    }
+    public void update(int index, int val) {
+        int diff=val-nums[index];
+        update(0,index,diff,0,nums.length-1);
+    }
+    private void update(int pos,int index,int diff,int l,int r){
+        //no overlap
+        if(index<l || index>r) return ;
+        if(l==r){
+            segmentTree[pos]+=diff;
+            nums[index]+=diff;
+            return;
+        }
+        int mid=(l+r)/2;
+        update(2*pos+1,index,diff,l,mid);
+        update(2*pos+2,index,diff,mid+1,r);
+        segmentTree[pos]+=diff;
+    }
+    public int sumRange(int left, int right) {
+       return query(0,left,right,0,nums.length-1); 
+    }
+    private int query(int pos, int l,int r,int low,int high){
+        //complete overlap
+        if(low>=l && high<=r) return segmentTree[pos];
+        // no overlap
+        else if(r<low || l>high) return 0;
+        else{
+            int mid=(low+high)/2;
+            int leftSegmentTree=query(2*pos+1,l,r,low,mid);
+            int rightSegmentTree=query(2*pos+2,l,r,mid+1,high);
+            return leftSegmentTree+rightSegmentTree;
+        }
+    }
+}
+
+/**
+ * Your NumArray object will be instantiated and called as such:
+ * NumArray obj = new NumArray(nums);
+ * obj.update(index,val);
+ * int param_2 = obj.sumRange(left,right);
+ */
