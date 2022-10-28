@@ -1,0 +1,55 @@
+//https://leetcode.com/problems/the-earliest-moment-when-everyone-become-friends/
+class Solution {
+    class UnionFind{
+        int[] parent;
+        int[] rank;
+        int count;
+        UnionFind(int n){
+            this.parent=new int[n];
+            this.rank=new int[n];
+            for(int i=0;i<n;i++){
+                parent[i]=i;
+                rank[i]=0;
+                count++;
+            }
+        }
+        // it returns the root of i
+        public int find(int i){
+            if(i!=parent[i]){
+                parent[i]=find(parent[i]);
+            }
+            return parent[i];
+        }
+        
+        public void union(int x,int y){
+            int rootX=find(x);
+            int rootY=find(y);
+            if(rootX==rootY) return;
+            if(rank[rootX]>rank[rootY]){
+                parent[rootY]=rootX;
+            }else if(rank[rootX]<rank[rootY]){
+                parent[rootX]=rootY;
+            }else{
+                parent[rootY]=rootX;
+                rank[rootX]++;
+            }
+            count--;
+        }
+    }
+    public int earliestAcq(int[][] logs, int n) {
+        Comparator<int[]> cmp=new Comparator<>(){
+            public int compare(int[] a,int[]b){
+                return a[0]-b[0];
+            }
+        };
+        Arrays.sort(logs,cmp);
+        UnionFind uf=new UnionFind(n);
+        for(int[] log:logs){
+            uf.union(log[1],log[2]);
+            if(uf.count==1){
+                return log[0];
+            }
+        }
+        return -1;
+    }
+}
