@@ -1,0 +1,63 @@
+Technical Phone Screen : Give an API that reads 4 objects. Use it to implement a function read which returns n objects in order.
+Round 1 : Given Jobs with start time and duration. Find how many workers needed to finish every job. Print which worker finishes which job.
+Round 2 : Rotten Oranges(https://leetcode.com/problems/rotting-oranges/)
+Round 3 : System Design : Design Twitter(Major focus on post tweet and home timeline)
+
+Round 2 Code
+public class Solution {
+    static class Task{
+        int startTime;
+        int duration;
+        int idx;
+        public Task(int st, int duration, int idx){
+            this.startTime = st;
+            this.duration = duration;
+            this.idx = idx;
+        }
+    }
+    public static void main(String[] args){
+        List<Task> tasks = new ArrayList<>();
+        readInput(tasks);
+        compute(tasks);
+    }
+    private static void readInput(List<Task> tasks){
+        Scanner sc = new Scanner(System.in);
+        int numOfTasks = Integer.parseInt(sc.nextLine());
+
+        for(int i = 0; i < numOfTasks; i++){
+            String s = sc.nextLine();
+            String[] sArr = s.split(" ");
+            int startTime = Integer.parseInt(sArr[0]);
+            int duration = Integer.parseInt(sArr[1]);
+            tasks.add(new Task(startTime, duration, i));
+        }
+    }
+    public static void compute(List<Task> tasks){
+        int[] ans = new int [tasks.size()];
+        Collections.sort(tasks, (t1, t2) -> t1.startTime - t2.startTime); //nlogn
+        PriorityQueue<int[]> runningTasks = new PriorityQueue<>((a, b) -> a[0] - b[0]);//finish time, workerIdx
+        PriorityQueue<Integer> freeWorkerByIdx = new PriorityQueue<>();
+        int workerCounter = 0;
+        for(int i = 0; i < tasks.size(); i++){ // n * logn
+            int startTime = tasks.get(i).startTime;
+            while(!runningTasks.isEmpty() && runningTasks.peek()[0] < startTime){
+                freeWorkerByIdx.offer(runningTasks.poll()[1]);
+            }
+            //get earliest task which is completed by finished time
+            int duration = tasks.get(i).duration;
+            if(freeWorkerByIdx.isEmpty()){
+                runningTasks.offer(new int[]{startTime + duration, workerCounter});
+                ans[tasks.get(i).idx] = workerCounter++;
+            }else {
+                // pick the job with the least index
+                int minWorkerIdx = freeWorkerByIdx.poll();
+                ans[tasks.get(i).idx] = minWorkerIdx;
+                runningTasks.offer(new int[]{startTime + duration, minWorkerIdx});
+            }
+        }
+        System.out.println(workerCounter);
+        for(int i = 0; i < ans.length; i++){
+            System.out.println("J" + i + " W" + ans[i]);
+        }
+    }
+}
