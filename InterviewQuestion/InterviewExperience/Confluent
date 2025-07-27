@@ -1,0 +1,95 @@
+// The candidate will be implementing a centralized service that checks historically whether a server was alive during a window in the past (this can be used to serve some analytics/debugging scenarios). A node is considered “down” for a window starting at time start if during a 500ms window starting at start milliseconds epoch time, the heartbeat service did not register heartbeats for three consecutive 100ms buckets.
+
+/**
+ * A host is considered to be alive for a given timestamp by the following procedure:
+ * We split the window [timestamp, timestamp + 500] into 5 buckets of 100ms each.
+ * If there are 3 consecutive buckets without heartbeats, then the host is considered down.
+ *
+ * Example:
+ *  // [(A,110), (A, 421), (A, 777)]
+ *  HeartbeatServer server = new HeartbeatServer(
+ *    Arrays.asList(
+ *        Pair.of("A",34L),
+ *        Pair.of("A",421L),
+ *        Pair.of("A",777L)));
+ *
+ *  wasAlive(A, 10) -> DOWN (three CONSECUTIVE misses)
+ *    [10-109],[110-209],[210-309],[310-409],[410-509]
+ *        Y         N         N         N         Y
+ *
+ *  wasAlive(A, 310) -> UP (no three CONSECUTIVE misses)
+ *    [310-409],[410-509],[510-609],[610-709],[710-809]
+ *        N         Y         N         N         Y
+ */
+import java.util.*;
+    class Pair{
+        String hostId;
+        Long heartBeat;
+        public Pair(String s, Long heartBeat){
+            this.hostId = s;
+            this.heartBeat = heartBeat;
+        }
+    }
+    class Solution{
+        static Long WINDOW_SIZE = 100L;
+        public static void main(String[] args){
+            List<Pair> heartBeats = Arrays.asList(
+                    new Pair("A",110L),
+                    new Pair("A",421L),
+                    new Pair("A",777L));
+            HashMap<String, List<Long>> hostToHeartBeatMap = processHeartBeats(heartBeats);
+            System.out.println(wasAlive(hostToHeartBeatMap, "A", 10L));
+        }
+        private static HashMap<String, List<Long>> processHeartBeats(List<Pair> heartBeats){
+            HashMap<String, List<Long>> hsmap = new HashMap<>();
+            for(Pair pair : heartBeats){
+                String hostId = pair.hostId;
+                Long heartBeat = pair.heartBeat;
+                if(!hsmap.containsKey(hostId)){
+                    hsmap.put(hostId, new ArrayList<>());
+                }
+                hsmap.get(hostId).add(heartBeat);
+            }
+            return hsmap;
+        }
+
+        private static boolean wasAlive(HashMap<String, List<Long>> hostToHeartBeatMap, String hostId, Long startTimeOfWindow){
+            boolean[] alive = new boolean[5];
+            for(int window = 0; window < 5; window++){
+                long curStartTime = startTimeOfWindow + window * WINDOW_SIZE;
+                long curEndTime = curStartTime + WINDOW_SIZE - 1;
+                //System.out.println("curStartTime : " + curStartTime);
+                //System.out.println("curEndTime : " + curEndTime);
+
+                if(getLeastHighestHeartBeat(curStartTime, hostToHeartBeatMap.get(hostId)) <= curEndTime){
+                    alive[window] = true;
+                }else{
+                    alive[window] = false;
+                }
+            }
+            for(int i = 0; i < 5; i++){
+                System.out.print(alive[i] + " ");
+            }
+            //iterate the alive array to find 3 consecutive false
+            for(int i = 2; i < 5; i++){
+                if(!alive[i] && !alive[i - 1] && !alive[i - 2]) return false;
+            }
+            return true;
+        }
+        private static long getLeastHighestHeartBeat(long target, List<Long> heartBeats){
+            System.out.println(heartBeats);
+            int start = 0, end = heartBeats.size() - 1;
+            long ans = Long.MAX_VALUE;
+            while(start <= end){
+                int mid = start + (end - start) / 2;
+                if(heartBeats.get(mid) >= target){
+                    ans = heartBeats.get(mid);
+                    end = mid - 1;
+                }else{
+                    start = mid + 1;
+                }
+            }
+            //System.out.println(ans);
+            return ans;
+        }
+    }
