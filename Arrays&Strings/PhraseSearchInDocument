@@ -1,0 +1,54 @@
+public class Practice {
+    static class Document{
+        String documentId;
+        String text;
+        public Document(String id, String txt){
+            this.documentId = id;
+            this.text = txt;
+        }
+    }
+    static class Word{
+        String documentId;
+        int position;
+        public Word(String docId, int pos){
+            this.documentId = docId;
+            this.position = pos;
+        }
+    }
+    private static void searchPhrase(List<Document> documents, String searchPhrase){
+        HashMap<String, HashSet<Word>> invertedIdx = new HashMap<>();
+        HashMap<String, List<String>> docToWords = new HashMap<>();
+        for(Document doc : documents){
+            String[] words = doc.text.split(" ");
+            for(int i = 0; i < words.length; i++){
+                invertedIdx.computeIfAbsent(words[i], word -> new HashSet<>()).add(new Word(doc.documentId, i));
+                docToWords.computeIfAbsent(doc.documentId, k -> new ArrayList<>()).add(words[i]);
+            }
+        }
+        String[] query = searchPhrase.split(" ");
+        HashSet<Word> candidates = invertedIdx.get(query[0]);
+        for(int i = 1; i < query.length; i++){
+            List<Word> nextPotentialCandidates = new ArrayList<>();
+            for(Word word : candidates){
+                nextPotentialCandidates.add(new Word(word.documentId, word.position + 1));
+            }
+            HashSet<Word> nextCandidates = new HashSet<>();
+            for(Word candidate : nextPotentialCandidates){
+                if(docToWords.get(candidate.documentId).get(candidate.position).equals(query[i])){
+                    nextCandidates.add(candidate);
+                }
+            }
+            candidates = nextCandidates;
+        }
+        for(Word word : candidates){
+            System.out.println(word.documentId);
+        }
+    }
+    public static void main(String [] args) throws ExecutionException, InterruptedException {
+        List<Document> documents = new ArrayList<>();
+        documents.add(new Document("1", "My name is jaswinder"));
+        documents.add(new Document("2", "My dog name is W"));
+        documents.add(new Document("3", "My name name is W"));
+        searchPhrase(documents, "My name");
+    }
+}
