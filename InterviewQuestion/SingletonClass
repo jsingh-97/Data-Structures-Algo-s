@@ -28,7 +28,7 @@ public class EagerInitializedSingleton {
 
 public class ThreadSafeSingleton {
 
-    private static ThreadSafeSingleton instance;
+    private static volatile ThreadSafeSingleton instance;
     
     private ThreadSafeSingleton(){}
     /*It is thread safe but performance overhead due to cost associated with synchronised keyword*/
